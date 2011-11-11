@@ -127,8 +127,10 @@ GameItem.prototype.checkWinnerDynamic = function(a, now, turn) {
         Y = Math.floor(num / this.y) // текущая строка
         X = Math.floor(num / this.x) // текущая колонка
         minLeft = (this.x * (X-1) + 1);
+    X = (X == 0 ? 1 : X);
+    Y = (Y == 0 ? 1 : Y);
     minLeft = (minLeft <= 0 ? 0 : minLeft);
-    console.log('X: %s, Y: %s', X, Y);
+    //console.log('X: %s, Y: %s', X, Y);
     switch(a) {
         // поиск по вертикали
         case '|':
@@ -151,13 +153,16 @@ GameItem.prototype.checkWinnerDynamic = function(a, now, turn) {
             //console.log('поиск по горизонтали');
             var toLeft = toRight = true;
             for(var i = 1; i <= this.stepsToWin; i++) {
-               //console.log('win: %s', win);
+               //console.log('%s >= %s', win, this.stepsToWin);
                if(win >= this.stepsToWin) return true;
+               //console.log('%s && %s', toLeft, toRight);
                if(!toLeft && !toRight) return false;
                //console.log('toLeft %s <= %s', minLeft, (num - i));
+               //console.log('toLeft: %s is %s', 'c' + (num - i), this.board['c' + (num - i)]);
+               //console.log('toRight: %s is %s', 'c' + (num + i), this.board['c' + (num + i)]);
                if(toLeft && (minLeft <= (num - i)) && this.board['c' + (num - i)] == turn) { win++; } else { toLeft = false; }
                //console.log('toRight %s >= %s', (this.x * X), (num + i));
-               if(toRight && ((this.x * X - 1) >= (num + i)) && this.board['c' + (num + i)] == turn) { win++; } else { toRight = false; }
+               if(toRight && ((this.x * X) >= (num + i)) && this.board['c' + (num + i)] == turn) { win++; } else { toRight = false; }
             }
         break;
 
