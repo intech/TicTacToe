@@ -11,13 +11,13 @@ io.sockets.on('connection', function (socket) {
 
     console.log('%s: %s - connected', socket.id.toString(), socket.handshake.address.address);
 
-    Game.start(socket.id.toString(), function(start, gameId, opponent){
+    Game.start(socket.id.toString(), function(start, gameId, opponent, x, y){
         if(start) {
             // Подключем к игре соперников
             socket.join(gameId);
             io.sockets.socket(opponent).join(gameId);
-            socket.emit('ready', gameId, 'X');
-            io.sockets.socket(opponent).emit('ready', gameId, 'O');
+            socket.emit('ready', gameId, 'X', x, y);
+            io.sockets.socket(opponent).emit('ready', gameId, 'O', x, y);
         } else {
             // ожидает аппонента
             io.sockets.socket(socket.id).emit('wait');

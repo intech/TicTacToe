@@ -2,16 +2,16 @@ var TicTacToe = {
     gameId: null,
     turn: null,
     i:false,
-    startGame: function (gameId, turn) {
+    startGame: function (gameId, turn, x, y) {
         this.gameId = gameId;
         this.turn = turn;
         this.i = (turn == 'X');
         console.log(this);
         var table = $('<table/>').addClass('ui-widget ui-corner-all').attr('cellpadding', 0).attr('cellspacing', 0).attr('align', 'center');
         var c = 1;
-        for(var i = 1; i <= 3; i++) {
+        for(var i = 1; i <= y; i++) {
             var tr = $('<tr/>');
-            for(var j = 0; j < 3; j++) {
+            for(var j = 0; j < x; j++) {
                 tr.append($('<td/>').attr('id', 'c' + c).addClass('ui-state-default').html('&nbsp;'));
                 c++;
             }

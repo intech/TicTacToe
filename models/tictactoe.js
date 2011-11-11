@@ -39,7 +39,8 @@ TicTacToe.prototype.step = function(gameId, now, user, cb) {
  * Запускаем игру
  */
 TicTacToe.prototype.start = function(user, cb) {
-    var x = y = 3, stepsToWin = 3;
+    // Размер игрового поля и кол-во ходов для победы
+    var x = y = stepsToWin = 3;
     // Ищем свободные игры
     if(this.free.length > 0) {
         var opponent = this.free.shift();
@@ -50,7 +51,7 @@ TicTacToe.prototype.start = function(user, cb) {
         this.games[id] = game;
         this.users[user] = id;
         //console.dir(this.games[id]);
-        cb(true, id, opponent);
+        cb(true, id, opponent, x, y);
     } else {
         // Пока нет, значит будем ждать
         this.free.push(user);

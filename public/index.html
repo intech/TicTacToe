@@ -12,8 +12,6 @@
 
     <style type="text/css">
         #board {
-            height: 300px;
-            width: 300px;
             display: none;
         }
         td {
@@ -63,9 +61,9 @@
             TicTacToe.endGame(TicTacToe.turn, true);
         });
         // К нам подключился соперник, начинаем игру
-        socket.on('ready', function(gameId, turn){
+        socket.on('ready', function(gameId, turn, x, y) {
             $('#status').html('К вам подключился соперник! Игра началась! Вы ходите ' + (turn == 'X' ? 'X - первый' : 'O - второй') + '!');
-            TicTacToe.startGame(gameId, turn);
+            TicTacToe.startGame(gameId, turn, x, y);
             $("#board td").click(function (e) {
                 if(TicTacToe.i) socket.emit('step', TicTacToe.gameId, e.target.id);
             });
