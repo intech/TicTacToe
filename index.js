@@ -5,7 +5,7 @@ app.use(express.static(__dirname + '/public'));
 app.listen(80);
 io.set('log level', 1);
 io.set('resource', '/api');
-var Game = new TicTacToe(), countUsers = 0;
+var Game = new TicTacToe();
 
 io.sockets.on('connection', function (socket) {
 
@@ -37,7 +37,6 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('disconnect', function () {
-        countUsers--;
         // Если один из игроков отключился, посылаем об этом сообщение второму
         // Отключаем обоих от игры и удаляем её, освобождаем память
         Game.end(socket.id.toString(), function(gameId, opponent) {
