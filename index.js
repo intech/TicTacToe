@@ -1,7 +1,7 @@
 var express = require('express'), app = express.createServer(),
     io = require('socket.io').listen(app), TicTacToe = require('./models/tictactoe');
 
-app.use(express.static('/public'));
+app.use(express.static(__dirname + '/public'));
 app.listen(80);
 io.set('log level', 1);
 io.set('resource', '/api');
