@@ -1,3 +1,93 @@
 TicTacToe - игра крестики нолики
 Серверная часть написанная на nodejs с использованием socket.io и express.
 Клиентская часть на jQuery, UI сделан на jQuery UI.
+
+
+step c3 X false
+step c6 O false
+step c4 X false
+step c7 O false
+step c5 X true
+
+   info  - socket.io started
+278049000662069043: 95.31.245.10 - connected
+20040954141759479051: 95.31.245.10 - connected
+X: 1, Y: 1
+поиск по горизонтали
+1 >= 3
+true && true
+toLeft: c2 is undefined
+toLeft 1 <= 2
+toRight: c4 is undefined
+toRight 3 >= 4
+1 >= 3
+false && false
+X: 1, Y: 1
+X: 1, Y: 1
+X: 1, Y: 1
+X: 2, Y: 2
+поиск по горизонтали
+1 >= 3
+true && true
+toLeft: c5 is undefined
+toLeft 4 <= 5
+toRight: c7 is undefined
+toRight 6 >= 7
+1 >= 3
+false && false
+X: 2, Y: 2
+X: 2, Y: 2
+X: 2, Y: 2
+X: 1, Y: 1
+поиск по горизонтали
+1 >= 3
+true && true
+toLeft: c3 is X
+toLeft 1 <= 3
+toRight: c5 is undefined
+toRight 3 >= 5
+2 >= 3
+true && false
+toLeft: c2 is undefined
+toLeft 1 <= 2
+toRight: c6 is O
+toRight 3 >= 6
+2 >= 3
+false && false
+X: 1, Y: 1
+X: 1, Y: 1
+X: 1, Y: 1
+X: 2, Y: 2
+поиск по горизонтали
+1 >= 3
+true && true
+toLeft: c6 is O
+toLeft 4 <= 6
+toRight: c8 is undefined
+toRight 6 >= 8
+2 >= 3
+true && false
+toLeft: c5 is undefined
+toLeft 4 <= 5
+toRight: c9 is undefined
+toRight 6 >= 9
+2 >= 3
+false && false
+X: 2, Y: 2
+X: 2, Y: 2
+X: 2, Y: 2
+X: 1, Y: 1
+поиск по горизонтали
+1 >= 3
+true && true
+toLeft: c4 is X
+toLeft 1 <= 4
+toRight: c6 is O
+toRight 3 >= 6
+2 >= 3
+true && false
+toLeft: c3 is X
+toLeft 1 <= 3
+toRight: c7 is O
+toRight 3 >= 7
+3 >= 3

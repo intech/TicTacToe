@@ -7,17 +7,15 @@ var TicTacToe = {
         this.turn = turn;
         this.i = (turn == 'X');
         console.log(this);
-        var table = $('<table/>').addClass('ui-widget ui-corner-all').attr('cellpadding', 0).attr('cellspacing', 0).attr('align', 'center');
-        var c = 1;
+        var table = $('#board-table').empty();
         for(var i = 1; i <= y; i++) {
             var tr = $('<tr/>');
             for(var j = 0; j < x; j++) {
-                tr.append($('<td/>').attr('id', 'c' + c).addClass('ui-state-default').html('&nbsp;'));
-                c++;
+                tr.append($('<td/>').attr('id', (j+1) + 'x' + i).addClass('ui-state-default').html('&nbsp;'));
             }
             table.append(tr);
         }
-        $("#board").html(table).show();
+        $("#board").show();
         $("#menu").hide();
     },
 
@@ -32,12 +30,13 @@ var TicTacToe = {
     },
 
     endGame: function (turn, win) {
-        if (win == "none") {
-            $("#menu").html("Ничья!");
-        } else {
-            $("#menu").html((this.i ? 'Противник выиграл! =(' : 'Вы выиграли! =)'));
+        var text = '';
+        switch(win) {
+            case 'none': text = 'Ничья!'; break;
+            case 'exit': text = 'Соперник сбежал с поля боя! Игра закончена'; break;
+            default: text = 'Вы ' + (this.i ? 'проиграли! =(' : 'выиграли! =)');
         }
-        $("#menu").dialog({
+        $("<div/>").html(text).dialog({
             title: 'Конец игры',
             modal: true,
             closeOnEscape: false,
