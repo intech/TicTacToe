@@ -1,0 +1,39 @@
+#mask {
+    position:absolute;
+    z-index: 5;
+    background-color: #000;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: none;
+}
+#masked {
+    display: none;
+}
+#board {}
+#board-table td {
+    height: 100px;
+    width: 100px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 42pt;
+    font-weight: bold;
+    font-family: Arial;
+    cursor: pointer;
+}
+#play_again {
+    display: block;
+    font-size: 20px;
+}
+#status {
+    padding: 10px;
+    margin: 10px;
+}
+#stats {
+    width: 320px;
+}
+#stats > div {
+    width: 300px;
+    padding: 3px;
+    margin: 1px;
+}

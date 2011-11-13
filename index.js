@@ -13,7 +13,13 @@ Game.stepsToWin = 4; // Default: 4
 
 io.sockets.on('connection', function (socket) {
     console.log('%s: %s - connected', socket.id.toString(), socket.handshake.address.address);
-    setInterval(function() {
+    io.sockets.emit('stats', [
+        'Всего игр: ' + countGames,
+        'Уникальных игроков: ' + Object.keys(countPlayers).length,
+        'Сейчас игр: ' + onlineGames,
+        'Сейчас игроков: ' + onlinePlayers
+    ]);
+    set Interval(function() {
         io.sockets.emit('stats', [
             'Всего игр: ' + countGames,
             'Уникальных игроков: ' + Object.keys(countPlayers).length,

@@ -5,104 +5,20 @@
     <meta charset="utf-8">
     <title>Крестики-нолики</title>
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/vader/jquery-ui.css">
+    <link rel="stylesheet" href="tictactoe.css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
     <script type="text/javascript" charset="utf-8" src="/socket.io/socket.io.min.js"></script>
     <script src="tictactoe.js"></script>
-
-    <style type="text/css">
-        #board { }
-        #board-table td {
-            height: 100px;
-            width: 100px;
-            text-align: center;
-            vertical-align: middle;
-            font-size: 42pt;
-            font-weight: bold;
-            font-family: Arial;
-            cursor: pointer;
-        }
-        #play_again {
-            display: block;
-            font-size: 20px;
-        }
-        #status {
-            padding: 10px;
-            margin: 10px;
-        }
-        #stats {
-            width: 320px;
-        }
-        #stats > div {
-            width: 300px;
-            padding: 3px;
-            margin: 1px;
-        }
-    </style>
-    <script type="text/javascript">
-        $(function(){
-            // Подключаемся к серверу nodejs с socket.io
-            var socket = io.connect('http://95.31.245.10:80', {resource: 'api'});
-            // Подключились
-            socket.on('connect', function () {
-                $('#status').html('Успешно подключились к игровому серверу');
-            });
-            // Переподключаемся
-            socket.on('reconnect', function () {
-                $('#connect-status').html('Переподключились, продолжайте игру');
-            });
-            // Соединение потеряно
-            socket.on('reconnecting', function () {
-                $('#status').html('Соединение с сервером потеряно, переподключаемся...');
-            });
-            // Ошибка
-            socket.on('error', function (e) {
-                $('#status').html('Ошибка: ' + (e ? e : 'неизвестная ошибка'));
-            });
-            // Ожидаем соперника
-            socket.on('wait', function(){
-                $('#status').append('... Ожидаем соперника...');
-            });
-            // Соперник отлючился
-            socket.on('exit', function(){
-                TicTacToe.endGame(TicTacToe.turn, 'exit');
-            });
-            // К нам подключился соперник, начинаем игру
-            socket.on('ready', function(gameId, turn, x, y) {
-                $('#status').html('К вам подключился соперник! Игра началась! Вы ходите ' + (turn == 'X' ? 'X - первый' : 'O - второй') + '!');
-                TicTacToe.startGame(gameId, turn, x, y);
-                $("#board-table td").click(function (e) {
-                    if(TicTacToe.i) socket.emit('step', TicTacToe.gameId, e.target.id);
-                }).hover(function(){
-                    $(this).toggleClass('ui-state-hover');
-                }, function(){
-                    $(this).toggleClass('ui-state-hover');
-                });
-            });
-            // Получаем ход
-            socket.on('step', function(id, turn, win) {
-                console.info('step', id, turn, win);
-                TicTacToe.move(id, turn, win);
-            });
-            // Статистика
-            socket.on('stats', function (arr) {
-                var stats = $('#stats');
-                stats.empty();
-                for(val in arr) {
-                    stats.append($('<div/>').attr('class', 'ui-state-hover ui-corner-all').html(arr[val]));
-                }
-            });
-        });
-    </script>
 </head>
-<body>
+<body onload="TicTacToe.init();">
     <table border="0" width="100%">
         <thead>
             <th colspan="2" id="status" class="ui-widget ui-state-hover ui-corner-all">Подключаемся к серверу...</th>
         </thead>
         <tbody>
-            <td id="stats" class="ui-widget" valign="top">Загрузка данных...</td>
-            <td id="board" class="ui-widget" valign="top">
+            <td id="stats" class="ui-widget" valign="top"><br /><button id="reload">Новая игра</button><br /><br /></td>
+            <td id="board" class="ui-widget" valign="top"><div id="masked" class="ui-widget-shadow ui-corner-all ui-widget-overlay"></div>
                 <table class="ui-widget ui-corner-all" cellpadding="0" cellspacing="0" align="left" id="board-table"></table>
             </td>
         </tbody>

@@ -84,10 +84,9 @@ TicTacToe.prototype.end = function(user, cb) {
     if(this.games[gameId] === undefined) return;
     var game = this.games[gameId];
     var opponent = (user == game.user ? game.opponent : game.user);
-    game.board = game.user = game.opponent = game.win = game.tictactoe = null;
     delete this.games[gameId];
-    delete this.users[user];
     game = null;
+    delete this.users[user];
     cb(gameId, opponent);
 }
 
