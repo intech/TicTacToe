@@ -2,7 +2,7 @@ var express = require('express'), app = express.createServer(),
     io = require('socket.io').listen(app), TicTacToe = require('./models/tictactoe');
 
 app.use(express.static(__dirname + '/public'));
-app.listen(80);
+app.listen(1337);
 io.set('log level', 1);
 io.set('resource', '/api');
 var countGames = onlinePlayers = onlineGames = 0, countPlayers = [], Game = new TicTacToe();
@@ -19,7 +19,7 @@ io.sockets.on('connection', function (socket) {
         'Сейчас игр: ' + onlineGames,
         'Сейчас игроков: ' + onlinePlayers
     ]);
-    set Interval(function() {
+    setInterval(function() {
         io.sockets.emit('stats', [
             'Всего игр: ' + countGames,
             'Уникальных игроков: ' + Object.keys(countPlayers).length,

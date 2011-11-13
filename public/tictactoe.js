@@ -6,7 +6,7 @@ var TicTacToe = {
         $(function() {
             $('#reload').button({icons:{primary:'ui-icon-refresh'}}).click(function(){window.location.reload();});
             // Подключаемся к серверу nodejs с socket.io
-            var socket = io.connect('http://95.31.245.10:80', {resource: 'api'});
+            var socket = io.connect(window.location.hostname + ':1337', {resource: 'api'});
             // Подключились
             socket.on('connect', function () {
                 $('#status').html('Успешно подключились к игровому серверу');
@@ -46,7 +46,7 @@ var TicTacToe = {
             });
             // Получаем ход
             socket.on('step', function(id, turn, win) {
-                console.info('step', id, turn, win);
+                //console.info('step', id, turn, win);
                 TicTacToe.move(id, turn, win);
             });
             // Статистика
@@ -64,7 +64,6 @@ var TicTacToe = {
         this.gameId = gameId;
         this.turn = turn;
         this.i = (turn == 'X');
-        console.log(this);
         var table = $('#board-table').empty();
         for(var i = 1; i <= y; i++) {
             var tr = $('<tr/>');
