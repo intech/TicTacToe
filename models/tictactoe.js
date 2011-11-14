@@ -31,7 +31,7 @@ var GameItem = function(user, opponent, x, y, stepsToWin) {
  * Сделан ход
  */
 GameItem.prototype.step = function(x, y, user, cb) {
-    //console.info('Step GameItem');
+    if(this.board[x + 'x' + y] !== undefined) return;
     this.board[x + 'x' + y] = this.getTurn(user);
     this.steps++;
     cb(this.checkWinner(x, y, this.getTurn(user)), this.getTurn(user));
@@ -122,11 +122,7 @@ GameItem.prototype.checkWinner = function(x, y, turn) {
 GameItem.prototype.checkWinnerDynamic = function(a, x, y, turn) {
     // будем проверять динамически 4 комбинации: горизонталь, вертикаль и 2 диагонали
     // при этом мы не знаем на какой позиции текущий ход,, проверять будем во всех 4 направлениях
-    var win = 1; //num = parseInt(now.replace("c", "")),
-        //Y = Math.round(num / this.y) // текущая колонка
-        //X = Math.round(num / this.x); // текущая строка
-    //X = (X == 0 ? 1 : X);
-    //Y = (Y == 0 ? 1 : Y);
+    var win = 1;
     switch(a) {
 
         // поиск по горизонтали
