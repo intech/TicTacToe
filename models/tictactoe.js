@@ -25,14 +25,17 @@ var GameItem = function(user, opponent, x, y, stepsToWin) {
     this.stepsToWin = stepsToWin;
     // Кол-во сделанных ходов
     this.steps = 0;
+    // Кто ходит
+    this.turn = 'X';
 }
 
 /**
  * Сделан ход
  */
 GameItem.prototype.step = function(x, y, user, cb) {
-    if(this.board[x + 'x' + y] !== undefined) return;
+    if(this.board[x + 'x' + y] !== undefined || this.getTurn(user) != this.turn) return;
     this.board[x + 'x' + y] = this.getTurn(user);
+    this.turn = (user != this.user ? 'X' : 'O');
     this.steps++;
     cb(this.checkWinner(x, y, this.getTurn(user)), this.getTurn(user));
 }

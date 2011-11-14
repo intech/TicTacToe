@@ -5,13 +5,28 @@
     <meta charset="utf-8">
     <title>Крестики-нолики</title>
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/vader/jquery-ui.css">
-    <link rel="stylesheet" href="/game/public/tictactoe.css">
+    <link rel="stylesheet" href="tictactoe.css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
-    <script type="text/javascript" charset="utf-8" src="/game/public/socket.io/socket.io.min.js"></script>
-    <script src="/game/public/tictactoe.js"></script>
+    <script type="text/javascript" charset="utf-8" src="socket.io/socket.io.min.js"></script>
+    <script src="tictactoe.js"></script>
+    <script type="text/javascript">
+    try {
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-27010709-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    } catch(err) {}
+    </script>
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">{lang: 'ru'}</script>
 </head>
 <body onload="TicTacToe.init();">
+    <g:plusone count="false"></g:plusone>
     <table border="0" width="100%">
         <thead>
             <th colspan="2" id="status" class="ui-widget ui-state-hover ui-corner-all">Подключаемся к серверу...</th>
