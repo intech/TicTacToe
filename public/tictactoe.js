@@ -7,29 +7,31 @@ var TicTacToe = {
             $('#reload').button({icons:{primary:'ui-icon-refresh'}}).click(function(){window.location.reload();});
             // Подключаемся к серверу nodejs с socket.io
             var socket = io.connect(window.location.hostname + ':1337', {resource: 'api'});
-            // Подключились
             socket.on('connect', function () {
                 $('#status').html('Успешно подключились к игровому серверу');
+                _gaq.push(['_trackEvent', 'WebSocket', 'Success']);
             });
-            // Переподключаемся
             socket.on('reconnect', function () {
                 $('#connect-status').html('Переподключились, продолжайте игру');
+                _gaq.push(['_trackEvent', 'WebSocket', 'Reconnect']);
             });
-            // Соединение потеряно
             socket.on('reconnecting', function () {
                 $('#status').html('Соединение с сервером потеряно, переподключаемся...');
+                _gaq.push(['_trackEvent', 'WebSocket', 'Reconnecting']);
             });
-            // Ошибка
             socket.on('error', function (e) {
                 $('#status').html('Ошибка: ' + (e ? e : 'неизвестная ошибка'));
+                _gaq.push(['_trackEvent', 'WebSocket', 'Error', (e ? e : 'неизвестная ошибка')]);
             });
             // Ожидаем соперника
             socket.on('wait', function(){
                 $('#status').append('... Ожидаем соперника...');
+                _gaq.push(['_trackEvent', 'Game', 'Wait']);
             });
             // Соперник отлючился
             socket.on('exit', function(){
                 TicTacToe.endGame(TicTacToe.turn, 'exit');
+                _gaq.push(['_trackEvent', 'Game', 'Exit']);
             });
             // К нам подключился соперник, начинаем игру
             socket.on('ready', function(gameId, turn, x, y) {
@@ -39,15 +41,17 @@ var TicTacToe = {
                 $("#board-table td").click(function (e) {
                     if(TicTacToe.i) socket.emit('step', TicTacToe.gameId, e.target.id);
                 }).hover(function(){
-                        $(this).toggleClass('ui-state-hover');
-                    }, function(){
-                        $(this).toggleClass('ui-state-hover');
-                    });
+                    $(this).toggleClass('ui-state-hover');
+                }, function(){
+                    $(this).toggleClass('ui-state-hover');
+                });
+                _gaq.push(['_trackEvent', 'Game', 'Start', gameId]);
             });
             // Получаем ход
             socket.on('step', function(id, turn, win) {
                 //console.info('step', id, turn, win);
                 TicTacToe.move(id, turn, win);
+                _gaq.push(['_trackEvent', 'Game', 'Step', id + ' / ' + turn + ' / ' + win]);
             });
             // Статистика
             socket.on('stats', function (arr) {
@@ -81,10 +85,12 @@ var TicTacToe = {
         if(state) {
             mask.show();
             var p = board.position();
-            mask.css('width', board.width());
-            mask.css('height', board.height());
-            mask.css('left', p.left+'px');
-            mask.css('top', p.top+'px');
+            mask.css({
+                width: board.width(),
+                height: board.height(),
+                left: p.left,
+                top: p.top
+            });
         } else {
             mask.hide();
         }
