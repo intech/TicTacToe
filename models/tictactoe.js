@@ -1,4 +1,8 @@
+var util = require('util'), EventEmitter = require('events').EventEmitter;
+
 var TicTacToe = module.exports = function() {
+    // Инициализируем события
+    EventEmitter.call(this);
     // Массив id игры = объект игры
     this.games = [];
     // Массив подключённых пользователей = id игры
@@ -11,8 +15,11 @@ var TicTacToe = module.exports = function() {
     // Шагов до победы
     this.stepsToWin = 4;
 }
+util.inherits(TicTacToe, EventEmitter);
 
 var GameItem = function(user, opponent, x, y, stepsToWin) {
+    // Инициализируем события
+    EventEmitter.call(this);
     // Ячейки игрового поля
     this.board = [];
     // Игроки
@@ -27,16 +34,33 @@ var GameItem = function(user, opponent, x, y, stepsToWin) {
     this.steps = 0;
     // Кто ходит
     this.turn = 'X';
+    // Таймер хода
+    this.timeout = null;
+    // Запускаем таймер
+    this.on('timer', function(state, user) {
+        if(state == 'stop') {
+            clearTimeout(this.timeout);
+            this.timeout = null;
+        } else {
+            var game = this;
+            this.timeout = setTimeout(function() {
+                game.emit('timeout', user);
+            }, 15000);
+        }
+    });
 }
+util.inherits(GameItem, EventEmitter);
 
 /**
  * Сделан ход
  */
 GameItem.prototype.step = function(x, y, user, cb) {
     if(this.board[x + 'x' + y] !== undefined || this.getTurn(user) != this.turn) return;
+    this.emit('timer', 'stop');
     this.board[x + 'x' + y] = this.getTurn(user);
     this.turn = (user != this.user ? 'X' : 'O');
     this.steps++;
+    this.emit('timer', 'start', (user == this.user ? this.opponent : this.user));
     cb(this.checkWinner(x, y, this.getTurn(user)), this.getTurn(user));
 }
 
@@ -54,14 +78,21 @@ TicTacToe.prototype.start = function(user, cb) {
     // Ищем свободные игры
     if(Object.keys(this.free).length > 0) {
         var opponent = Object.keys(this.free).shift();
+        delete this.free[opponent];
         // Если есть ожидающие игру, создаём им игру
         var game = new GameItem(user, opponent, this.x, this.y, this.stepsToWin);
-        var id = user + opponent;
+        var id = [
+            Math.random() * 0xffff | 0
+            , Math.random() * 0xffff | 0
+            , Math.random() * 0xffff | 0
+            , Date.now()
+        ].join('-');
         // Добавляем игру в список действующих
         this.games[id] = game;
         this.users[user] = id;
         this.users[opponent] = id;
         //console.dir(this.games[id]);
+        game.emit('timer', 'start', user);
         cb(true, id, opponent, this.x, this.y);
     } else {
         // Пока нет, значит будем ждать
@@ -87,10 +118,11 @@ TicTacToe.prototype.end = function(user, cb) {
     if(this.games[gameId] === undefined) return;
     var game = this.games[gameId];
     var opponent = (user == game.user ? game.opponent : game.user);
+    var turn = game.turn;
     delete this.games[gameId];
     game = null;
     delete this.users[user];
-    cb(gameId, opponent);
+    cb(gameId, opponent, turn);
 }
 
 /**

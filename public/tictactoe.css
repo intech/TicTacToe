@@ -7,8 +7,15 @@
     overflow: hidden;
     display: none;
 }
-#masked {
+#masked, #timerpanel {
+    vertical-align: middle;
     display: none;
+}
+#timer {
+    font-weight: bold;
+    color: red;
+    font-size: 16px;
+    vertical-align: middle;
 }
 #board {}
 #board-table td {

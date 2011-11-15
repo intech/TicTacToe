@@ -5,43 +5,58 @@ app.use(express.static(__dirname + '/public'));
 app.listen(1337);
 io.set('log level', 1);
 io.set('resource', '/api');
-var countGames = onlinePlayers = onlineGames = 0, countPlayers = [], Game = new TicTacToe();
+var countGames = 0, countPlayers = [], Game = new TicTacToe();
 // Размеры поля
 Game.x = Game.y = 6; // Default: 6
 // Необходимое кол-во занятых подряд клеток для победы
 Game.stepsToWin = 4; // Default: 4
 
-io.sockets.on('connection', function (socket) {
-    console.log('%s: %s - connected', socket.id.toString(), socket.handshake.address.address);
+setInterval(function() {
     io.sockets.emit('stats', [
         'Всего игр: ' + countGames,
         'Уникальных игроков: ' + Object.keys(countPlayers).length,
-        'Сейчас игр: ' + onlineGames,
-        'Сейчас игроков: ' + onlinePlayers
+        'Сейчас игр: ' + Object.keys(Game.games).length,
+        'Сейчас игроков: ' + Object.keys(Game.users).length
     ]);
-    setInterval(function() {
-        io.sockets.emit('stats', [
-            'Всего игр: ' + countGames,
-            'Уникальных игроков: ' + Object.keys(countPlayers).length,
-            'Сейчас игр: ' + onlineGames,
-            'Сейчас игроков: ' + onlinePlayers
-        ]);
-    }, 5000);
-    Game.start(socket.id.toString(), function(start, gameId, opponent, x, y){
-        if(start) {
-            // Подключем к игре соперников в отдельную комнату
-            socket.join(gameId);
-            io.sockets.socket(opponent).join(gameId);
-            socket.emit('ready', gameId, 'X', x, y);
-            io.sockets.socket(opponent).emit('ready', gameId, 'O', x, y);
-            countGames++;
-            onlineGames++;
-        } else {
-            // ожидает аппонента
-            io.sockets.socket(socket.id).emit('wait');
-        }
-        if(countPlayers[socket.handshake.address.address] == undefined) countPlayers[socket.handshake.address.address] = true;
-        onlinePlayers++;
+}, 5000);
+io.sockets.emit('stats', [
+    'Всего игр: ' + countGames,
+    'Уникальных игроков: ' + Object.keys(countPlayers).length,
+    'Сейчас игр: ' + Object.keys(Game.games).length,
+    'Сейчас игроков: ' + Object.keys(Game.users).length
+]);
+
+io.sockets.on('connection', function (socket) {
+    console.log('%s: %s - connected', socket.id.toString(), socket.handshake.address.address);
+    if(countPlayers[socket.handshake.address.address] == undefined) countPlayers[socket.handshake.address.address] = true;
+
+    function closeRoom(gameId, opponent) {
+        socket.leave(gameId);
+        io.sockets.socket(opponent).leave(gameId);
+    }
+
+    socket.on('start', function () {
+        if(Game.users[socket.id] !== undefined) return;
+        Game.start(socket.id.toString(), function(start, gameId, opponent, x, y){
+            if(start) {
+                Game.games[gameId].on('timeout', function(user) {
+                    Game.end(user, function(gameId, opponent, turn) {
+                        io.sockets.in(gameId).emit('timeout', turn);
+                        closeRoom(gameId, opponent);
+                    });
+                });
+
+                // Подключем к игре соперников в отдельную комнату
+                socket.join(gameId);
+                io.sockets.socket(opponent).join(gameId);
+                socket.emit('ready', gameId, 'X', x, y);
+                io.sockets.socket(opponent).emit('ready', gameId, 'O', x, y);
+                countGames++;
+            } else {
+                // ожидает аппонента
+                io.sockets.socket(socket.id).emit('wait');
+            }
+        });
     });
 
     socket.on('step', function (gameId, id) {
@@ -51,8 +66,7 @@ io.sockets.on('connection', function (socket) {
             io.sockets.in(gameId).emit('step', id, turn, win);
             if(win) {
                 Game.end(socket.id.toString(), function(gameId, opponent){
-                    socket.leave(gameId);
-                    io.sockets.socket(opponent).leave(gameId);
+                    closeRoom(gameId, opponent);
                 });
             }
         });
@@ -63,11 +77,8 @@ io.sockets.on('connection', function (socket) {
         // Отключаем обоих от игры и удаляем её, освобождаем память
         Game.end(socket.id.toString(), function(gameId, opponent) {
             io.sockets.socket(opponent).emit('exit');
-            socket.leave(gameId);
-            io.sockets.socket(opponent).leave(gameId);
-            onlineGames--;
+            closeRoom(gameId, opponent);
         });
-        onlinePlayers--;
         console.log('%s: %s - disconnected', socket.id.toString(), socket.handshake.address.address);
     });
 

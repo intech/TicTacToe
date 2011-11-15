@@ -1,21 +1,28 @@
 var TicTacToe = {
     gameId: null,
     turn: null,
-    i:false,
+    i: false,
+    interval: null,
     init: function() {
         $(function() {
-            $('#reload').button({icons:{primary:'ui-icon-refresh'}}).click(function(){window.location.reload();});
             // Подключаемся к серверу nodejs с socket.io
             var socket = io.connect(window.location.hostname + ':1337', {resource: 'api'});
+            $('#reload').hide().button({icons:{primary:'ui-icon-refresh'}}).click(function() {
+                $('#reload').off('click').click(function(){window.location.reload();});
+                socket.emit('start');
+            });
             socket.on('connect', function () {
                 $('#status').html('Успешно подключились к игровому серверу');
+                $('#reload').show();
                 _gaq.push(['_trackEvent', 'WebSocket', 'Success']);
             });
             socket.on('reconnect', function () {
+                $('#reload').show();
                 $('#connect-status').html('Переподключились, продолжайте игру');
                 _gaq.push(['_trackEvent', 'WebSocket', 'Reconnect']);
             });
             socket.on('reconnecting', function () {
+                $('#reload').hide();
                 $('#status').html('Соединение с сервером потеряно, переподключаемся...');
                 _gaq.push(['_trackEvent', 'WebSocket', 'Reconnecting']);
             });
@@ -32,6 +39,11 @@ var TicTacToe = {
             socket.on('exit', function(){
                 TicTacToe.endGame(TicTacToe.turn, 'exit');
                 _gaq.push(['_trackEvent', 'Game', 'Exit']);
+            });
+            // Время на ход вышло
+            socket.on('timeout', function(turn) {
+                TicTacToe.endGame(turn, 'timeout');
+                _gaq.push(['_trackEvent', 'Game', 'Timeout']);
             });
             // К нам подключился соперник, начинаем игру
             socket.on('ready', function(gameId, turn, x, y) {
@@ -76,12 +88,18 @@ var TicTacToe = {
             }
             table.append(tr);
         }
-        $("#board").show();
+        $("#board,#timerpanel").show();
         this.mask(!this.i);
     },
 
     mask: function(state) {
         var mask = $('#masked'), board = $('#board-table');
+        clearInterval(this.interval);
+        $('#timer').html(15);
+        this.interval = setInterval(function(){
+            var i = parseInt($('#timer').html()); i--;
+            $('#timer').html(i);
+        }, 1000);
         if(state) {
             mask.show();
             var p = board.position();
@@ -108,9 +126,11 @@ var TicTacToe = {
     },
 
     endGame: function (turn, win) {
+        clearInterval(this.interval);
         var text = '';
         switch(win) {
             case 'none': text = 'Ничья!'; break;
+            case 'timeout': text = (turn == this.turn ? 'Слишком долго думали! Вы проиграли!' : 'Соперник так и не смог решить как ему ходить! Вы победили!'); break;
             case 'exit': text = 'Соперник сбежал с поля боя! Игра закончена'; break;
             default: text = 'Вы ' + (this.i ? 'проиграли! =(' : 'выиграли! =)');
         }
