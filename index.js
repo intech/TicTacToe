@@ -19,20 +19,22 @@ setInterval(function() {
         'Сейчас игроков: ' + Object.keys(Game.users).length
     ]);
 }, 5000);
-io.sockets.emit('stats', [
-    'Всего игр: ' + countGames,
-    'Уникальных игроков: ' + Object.keys(countPlayers).length,
-    'Сейчас игр: ' + Object.keys(Game.games).length,
-    'Сейчас игроков: ' + Object.keys(Game.users).length
-]);
 
 io.sockets.on('connection', function (socket) {
     console.log('%s: %s - connected', socket.id.toString(), socket.handshake.address.address);
     if(countPlayers[socket.handshake.address.address] == undefined) countPlayers[socket.handshake.address.address] = true;
 
+    io.sockets.emit('stats', [
+        'Всего игр: ' + countGames,
+        'Уникальных игроков: ' + Object.keys(countPlayers).length,
+        'Сейчас игр: ' + Object.keys(Game.games).length,
+        'Сейчас игроков: ' + Object.keys(Game.users).length
+    ]);
+
     function closeRoom(gameId, opponent) {
         socket.leave(gameId);
         io.sockets.socket(opponent).leave(gameId);
+        countGames--;
     }
 
     socket.on('start', function () {
