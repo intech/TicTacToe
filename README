@@ -1,3 +1,7 @@
 TicTacToe - игра крестики нолики
 Серверная часть написанная на nodejs с использованием socket.io и express.
 Клиентская часть на jQuery, UI сделан на jQuery UI.
+
+== Habrahabr Статья
+{Часть 1}[http://habrahabr.ru/blogs/nodejs/132544/]
+{Часть 2}[http://habrahabr.ru/blogs/nodejs/132676/]
