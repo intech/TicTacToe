@@ -62,7 +62,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('step', function (gameId, id) {
-        if(Game.games[gameId] !== undefined) return;
+        if(Game.games[gameId] === undefined) return;
         // Парсим из ID элемента координаты XxY
         var coordinates = id.split('x');
         Game.step(gameId, parseInt(coordinates[0]), parseInt(coordinates[1]), socket.id.toString(), function(win, turn) {
