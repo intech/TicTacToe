@@ -6,7 +6,7 @@ var TicTacToe = {
     init: function() {
         $(function() {
             // Подключаемся к серверу nodejs с socket.io
-            var socket = io.connect(window.location.hostname + ':1337', {resource: 'api'});
+            var socket = io.connect(window.location.host + ':1337', {resource: 'api'});
             $('#reload').hide().button({icons:{primary:'ui-icon-refresh'}}).click(function() {
                 $('#reload').off('click').click(function(){window.location.reload();});
                 socket.emit('start');

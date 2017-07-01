@@ -1,8 +1,24 @@
-var express = require('express'), app = express.createServer(),
-    io = require('socket.io').listen(app), TicTacToe = require('./models/tictactoe');
+'use strict';
+
+
+
+let express = require('express');
+
+
+let app = express();
+let server = require('http').createServer(app);
+
+let io = require('socket.io')(server);
+
+let waitingPlayer;
+
 
 app.use(express.static(__dirname + '/public'));
-app.listen(1337);
+server.listen(1337, () => console.log('reday to work'));
+
+    
+let TicTacToe = require('./models/tictactoe');
+
 io.set('log level', 1);
 io.set('resource', '/api');
 var countGames = 0, countPlayers = [], Game = new TicTacToe();
